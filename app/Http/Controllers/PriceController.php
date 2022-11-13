@@ -101,7 +101,8 @@ class PriceController extends Controller
             else
                 $request->validate($this->price->regras($id),$this->price->feedback());
 
-            $price->update($request->all());
+            $price->fill($request->all());
+            $price->save();
             return response()->json($price,200);
         }
     }

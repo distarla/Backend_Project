@@ -101,7 +101,8 @@ class ClientController extends Controller
             else
                 $request->validate($this->client->regras($id),$this->client->feedback());
 
-            $client->update($request->all());
+            $client->fill($request->all());
+            $client->save();
             return response()->json($client,200);
         }
     }

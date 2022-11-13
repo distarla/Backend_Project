@@ -100,7 +100,8 @@ class RangeController extends Controller
             else
                 $request->validate($this->range->regras($id),$this->range->feedback());
 
-            $range->update($request->all());
+            $range->fill($request->all());
+            $range->save();
             return response()->json($range,200);
         }
     }

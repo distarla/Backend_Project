@@ -101,7 +101,8 @@ class MenuController extends Controller
             else
                 $request->validate($this->menu->regras($id),$this->menu->feedback());
 
-            $menu->update($request->all());
+            $menu->fill($request->all());
+            $menu->save();
             return response()->json($menu,200);
         }
     }

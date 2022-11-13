@@ -101,7 +101,8 @@ class EventController extends Controller
             else
                 $request->validate($this->event->regras($id),$this->event->feedback());
 
-            $event->update($request->all());
+            $event->fill($request->all());
+            $event->save();
             return response()->json($event,200);
         }
     }
