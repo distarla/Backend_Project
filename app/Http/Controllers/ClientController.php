@@ -18,9 +18,16 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $clients=$this->client->with('events')->get();
+        //api/clients?attr=id,value,...
+
+        if ($request->has('attr')) {
+            //with tem de ter o atributo 'events_id' nos attr caso contrário devolve nulo
+            $clients=$this->client->selectRaw($request->attr)->with('events')->get();
+        } else {
+            $clients=$this->client->with('events')->get();
+        }
         return response()->json($clients,200);
     }
 

@@ -18,9 +18,16 @@ class EventController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $events=$this->event->with('price', 'menu', 'range', 'clients')->get();
+        //api/events?attr=id,value,...
+
+        if ($request->has('attr')) {
+            //with tem de ter o atributo 'price_id', 'menu_id', 'range_id', 'clients_id' nos attr caso contrário devolve nulo
+            $events=$this->event->selectRaw($request->attr)->with('price', 'menu', 'range', 'clients')->get();
+        } else {
+            $events=$this->event->with('price', 'menu', 'range', 'clients')->get();
+        }
         return response()->json($events,200);
     }
 

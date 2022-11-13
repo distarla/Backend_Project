@@ -12,14 +12,22 @@ class RangeController extends Controller
     {
         $this->range=$range;
     }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $ranges=$this->range->with('prices', 'events')->get();
+        //api/ranges?attr=id,value,...
+
+        if ($request->has('attr')) {
+            //with tem de ter o atributo 'price_id', 'events_id' nos attr caso contrário devolve nulo
+            $ranges=$this->range->selectRaw($request->attr)->with('prices', 'events')->get();
+        } else {
+            $ranges=$this->range->with('prices', 'events')->get();
+        }
         return response()->json($ranges,200);
     }
 

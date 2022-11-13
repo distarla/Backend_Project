@@ -18,9 +18,16 @@ class PriceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $prices=$this->price->with('menu', 'range', 'events')->get();
+        //api/prices?attr=id,value,...
+
+        if ($request->has('attr')) {
+            //with tem de ter o atributo 'menu_id', 'range_id', 'events_id' nos attr caso contrário devolve nulo
+            $prices=$this->price->selectRaw($request->attr)->with('menu', 'range', 'events')->get();
+        } else {
+            $prices=$this->price->with('menu', 'range', 'events')->get();
+        }
         return response()->json($prices,200);
     }
 

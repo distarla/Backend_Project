@@ -18,9 +18,16 @@ class MenuController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $menus=$this->menu->with('prices', 'events')->get();
+        //api/menus?attr=id,value,...
+
+        if ($request->has('attr')) {
+            //with tem de ter o atributo 'price_id', 'events_id' nos attr caso contrário devolve nulo
+            $menus=$this->menu->selectRaw($request->attr)->with('prices', 'events')->get();
+        } else {
+            $menus=$this->menu->with('prices', 'events')->get();
+        }
         return response()->json($menus,200);
     }
 
