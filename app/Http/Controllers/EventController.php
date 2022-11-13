@@ -20,7 +20,7 @@ class EventController extends Controller
      */
     public function index()
     {
-        $events=$this->event->all();
+        $events=$this->event->with('price', 'menu', 'range', 'clients')->get();
         return response()->json($events,200);
     }
 
@@ -56,7 +56,7 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event=$this->event->find($id);
+        $event=$this->event->with('price', 'menu', 'range', 'clients')->find($id);
         if ($event===null)
             return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
         else

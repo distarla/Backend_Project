@@ -20,7 +20,7 @@ class PriceController extends Controller
      */
     public function index()
     {
-        $prices=$this->price->all();
+        $prices=$this->price->with('menu', 'range', 'events')->get();
         return response()->json($prices,200);
     }
 
@@ -56,7 +56,7 @@ class PriceController extends Controller
      */
     public function show($id)
     {
-        $price=$this->price->find($id);
+        $price=$this->price->with('menu', 'range', 'events')->find($id);
         if ($price===null)
             return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
         else

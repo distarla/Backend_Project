@@ -20,7 +20,7 @@ class MenuController extends Controller
      */
     public function index()
     {
-        $menus=$this->menu->all();
+        $menus=$this->menu->with('prices', 'events')->get();
         return response()->json($menus,200);
     }
 
@@ -56,7 +56,7 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        $menu=$this->menu->find($id);
+        $menu=$this->menu->with('prices', 'events')->find($id);
         if ($menu===null)
             return response()->json(["erro"=>"O Menu pesquisado não existe!"],404);
         else

@@ -19,7 +19,7 @@ class RangeController extends Controller
      */
     public function index()
     {
-        $ranges=$this->range->all();
+        $ranges=$this->range->with('prices', 'events')->get();
         return response()->json($ranges,200);
     }
 
@@ -55,7 +55,7 @@ class RangeController extends Controller
      */
     public function show($id)
     {
-        $range=$this->range->find($id);
+        $range=$this->range->with('prices', 'events')->find($id);
         if ($range===null)
             return response()->json(["erro"=>"O Escalão pesquisado não existe!"],404);
         else

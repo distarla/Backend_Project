@@ -20,7 +20,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients=$this->client->all();
+        $clients=$this->client->with('events')->get();
         return response()->json($clients,200);
     }
 
@@ -56,7 +56,7 @@ class ClientController extends Controller
      */
     public function show($id)
     {
-        $client=$this->client->find($id);
+        $client=$this->client->with('events')->find($id);
         if ($client===null)
             return response()->json(["erro"=>"O Cliente pesquisado não existe!"],404);
         else
