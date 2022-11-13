@@ -9,6 +9,24 @@ class Range extends Model
 {
     use HasFactory;
 
+    protected $fillable=['initial_value','final_value'];
+
+    public function regras($id=-1) {
+        return [
+            "initial_value"=>"required|unique:ranges,initial_value,$id|lt:final_value",
+            "final_value"=>"required|unique:ranges,final_value,$id|gt:initial_value"
+        ];
+    }
+
+    public function feedback() {
+        return [
+            "required"=>"O campo :attribute é obrigatório",
+            "unique"=>"O valor indicado já está atribuído",
+            "lt"=>"O valor tem que ser inferior ao valor final",
+            "gt"=>"O valor tem que ser superior ao valor inicial"
+        ];
+    }
+
     /**
      * Get the events associated with the range.
      */

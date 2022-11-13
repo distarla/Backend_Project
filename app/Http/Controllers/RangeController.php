@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreRangeRequest;
-use App\Http\Requests\UpdateRangeRequest;
+use Illuminate\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use App\Models\Range;
 
 class RangeController extends Controller
 {
+    public function __construct(Range $range)
+    {
+        $this->range=$range;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +19,8 @@ class RangeController extends Controller
      */
     public function index()
     {
-        //
+        $ranges=$this->range->all();
+        return response()->json($ranges,200);
     }
 
     /**
@@ -31,32 +36,39 @@ class RangeController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreRangeRequest  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreRangeRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate($this->range->regras(),$this->range->feedback());
+
+        $range= $this->range->create($request->all());
+        return response()->json($range,201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Range  $range
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function show(Range $range)
+    public function show($id)
     {
-        //
+        $range=$this->range->find($id);
+        if ($range===null)
+            return response()->json(["erro"=>"O Escalão pesquisado não existe!"],404);
+        else
+            return response()->json($range,200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Range  $range
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function edit(Range $range)
+    public function edit($id)
     {
         //
     }
@@ -64,23 +76,49 @@ class RangeController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateRangeRequest  $request
-     * @param  \App\Models\Range  $range
+     * @param  \Illuminate\Http\Request $request
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateRangeRequest $request, Range $range)
+    public function update(Request $request, $id)
     {
-        //
+        $range=$this->range->find($id);
+        if ($range===null)
+            return response()->json(["erro"=>"O Escalão pesquisado não existe!"],404);
+        else {
+            if ($request->method() === 'PATCH') {
+                $regrasDinamicas=array();
+
+                //Percorrer todas as regras do Model
+                foreach($range->regras() as $input=>$regra)  {
+                    //adiciona no array regrasdinamicas as regras correspondentes aos campos submetidos
+                    if(array_key_exists($input,$request->all()))
+                        $regrasDinamicas[$input]=$regra;
+                }
+                $request->validate($regrasDinamicas,$this->range->feedback());
+            }
+            else
+                $request->validate($this->range->regras($id),$this->range->feedback());
+
+            $range->update($request->all());
+            return response()->json($range,200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Range  $range
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Range $range)
+    public function destroy($id)
     {
-        //
+        $range=$this->range->find($id);
+        if ($range===null)
+            return response()->json(["erro"=>"O Escalão pesquisado não existe!"],404);
+        else {
+            $range->delete();
+            return response()->json(["msg"=>"O Escalão foi apagado com sucesso!"],200);;
+        }
     }
 }
