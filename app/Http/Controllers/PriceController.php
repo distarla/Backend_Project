@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StorePriceRequest;
-use App\Http\Requests\UpdatePriceRequest;
+use Illuminate\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use App\Models\Price;
 
 class PriceController extends Controller
 {
+    public function __construct(Price $price)
+    {
+        $this->price=$price;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +20,8 @@ class PriceController extends Controller
      */
     public function index()
     {
-        //
+        $prices=$this->price->all();
+        return response()->json($prices,200);
     }
 
     /**
@@ -31,32 +37,39 @@ class PriceController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StorePriceRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StorePriceRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate($this->price->regras(),$this->price->feedback());
+
+        $price= $this->price->create($request->all());
+        return response()->json($price,201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Price  $price
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function show(Price $price)
+    public function show($id)
     {
-        //
+        $price=$this->price->find($id);
+        if ($price===null)
+            return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
+        else
+            return response()->json($price,200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Price  $price
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function edit(Price $price)
+    public function edit($id)
     {
         //
     }
@@ -64,23 +77,49 @@ class PriceController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdatePriceRequest  $request
-     * @param  \App\Models\Price  $price
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdatePriceRequest $request, Price $price)
+    public function update(Request $request, $id)
     {
-        //
+        $price=$this->price->find($id);
+        if ($price===null)
+            return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
+        else {
+            if ($request->method() === 'PATCH') {
+                $regrasDinamicas=array();
+
+                //Percorrer todas as regras do Model
+                foreach($price->regras() as $input=>$regra)  {
+                    //adiciona no array regrasdinamicas as regras correspondentes aos campos submetidos
+                    if(array_key_exists($input,$request->all()))
+                        $regrasDinamicas[$input]=$regra;
+                }
+                $request->validate($regrasDinamicas,$this->price->feedback());
+            }
+            else
+                $request->validate($this->price->regras($id),$this->price->feedback());
+
+            $price->update($request->all());
+            return response()->json($price,200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Price  $price
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Price $price)
+    public function destroy($id)
     {
-        //
+        $price=$this->price->find($id);
+        if ($price===null)
+            return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
+        else {
+            $price->delete();
+            return response()->json(["msg"=>"O Preço foi apagado com sucesso!"],200);;
+        }
     }
 }

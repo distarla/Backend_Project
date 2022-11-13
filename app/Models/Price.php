@@ -9,6 +9,22 @@ class Price extends Model
 {
     use HasFactory;
 
+    protected $fillable=['menu_id','range_id', 'value'];
+
+    public function regras($id=-1) {
+        return [
+            "menu_id"=>"required",
+            "range_id"=>"required",
+            "value"=>"required"
+        ];
+    }
+
+    public function feedback() {
+        return [
+            "required"=>"O campo :attribute é obrigatório"
+        ];
+    }
+
     /**
      * Get the events associated with the price.
      */
