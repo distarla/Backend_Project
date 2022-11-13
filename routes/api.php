@@ -17,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::apiResource('clients','App\Http\Controllers\ClientController');
+Route::apiResource('events','App\Http\Controllers\EventController');
+Route::apiResource('menus','App\Http\Controllers\MenuController');
+Route::apiResource('person_groups','App\Http\Controllers\PersonGroupController');
+Route::apiResource('prices','App\Http\Controllers\PriceController');
