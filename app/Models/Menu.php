@@ -9,6 +9,21 @@ class Menu extends Model
 {
     use HasFactory;
 
+    protected $fillable=['name', 'starters', 'main', 'desserts', 'buffet', 'bar'];
+
+    public function regras($id=-1) {
+        return [
+            "name"=>"required|unique:menus,name,$id",
+        ];
+    }
+
+    public function feedback() {
+        return [
+            "required"=>"O campo :attribute é obrigatório",
+            "name.unique"=>"O Menu indicado já existe"
+        ];
+    }
+
     /**
      * Get the events associated with the menu.
      */
