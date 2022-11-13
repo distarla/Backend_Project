@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreEventRequest;
-use App\Http\Requests\UpdateEventRequest;
+use Illuminate\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use App\Models\Event;
 
 class EventController extends Controller
 {
+    public function __construct(Event $event)
+    {
+        $this->event=$event;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,7 +20,8 @@ class EventController extends Controller
      */
     public function index()
     {
-        //
+        $events=$this->event->all();
+        return response()->json($events,200);
     }
 
     /**
@@ -31,32 +37,39 @@ class EventController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreEventRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreEventRequest $request)
+    public function store(Request $request)
     {
-        //
+        $request->validate($this->event->regras(),$this->event->feedback());
+
+        $event= $this->event->create($request->all());
+        return response()->json($event,201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Event  $event
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function show(Event $event)
+    public function show($id)
     {
-        //
+        $event=$this->event->find($id);
+        if ($event===null)
+            return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
+        else
+            return response()->json($event,200);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Event  $event
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function edit(Event $event)
+    public function edit($id)
     {
         //
     }
@@ -64,23 +77,49 @@ class EventController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UpdateEventRequest  $request
-     * @param  \App\Models\Event  $event
+     * @param  \Illuminate\Http\Request  $request
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateEventRequest $request, Event $event)
+    public function update(Request $request, $id)
     {
-        //
+        $event=$this->event->find($id);
+        if ($event===null)
+            return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
+        else {
+            if ($request->method() === 'PATCH') {
+                $regrasDinamicas=array();
+
+                //Percorrer todas as regras do Model
+                foreach($event->regras() as $input=>$regra)  {
+                    //adiciona no array regrasdinamicas as regras correspondentes aos campos submetidos
+                    if(array_key_exists($input,$request->all()))
+                        $regrasDinamicas[$input]=$regra;
+                }
+                $request->validate($regrasDinamicas,$this->event->feedback());
+            }
+            else
+                $request->validate($this->event->regras($id),$this->event->feedback());
+
+            $event->update($request->all());
+            return response()->json($event,200);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Event  $event
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Event $event)
+    public function destroy($id)
     {
-        //
+        $event=$this->event->find($id);
+        if ($event===null)
+            return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
+        else {
+            $event->delete();
+            return response()->json(["msg"=>"O Evento foi apagado com sucesso!"],200);;
+        }
     }
 }

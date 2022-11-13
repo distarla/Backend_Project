@@ -21,5 +21,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('clients','App\Http\Controllers\ClientController');
 Route::apiResource('events','App\Http\Controllers\EventController');
 Route::apiResource('menus','App\Http\Controllers\MenuController');
-Route::apiResource('person_groups','App\Http\Controllers\PersonGroupController');
+Route::apiResource('ranges','App\Http\Controllers\RangeController');
 Route::apiResource('prices','App\Http\Controllers\PriceController');

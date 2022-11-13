@@ -9,6 +9,22 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $fillable=['title', 'date', 'num_persons', 'menu_id'];
+
+    public function regras($id=-1) {
+        return [
+            "title"=>"required",
+            "date"=>"required|date_format:Y-m-d"
+        ];
+    }
+
+    public function feedback() {
+        return [
+            "required"=>"O campo :attribute é obrigatório",
+            "date"=>"A data indicada não é válida"
+        ];
+    }
+
     /**
      * Get the range associated with the event.
      */
@@ -38,6 +54,6 @@ class Event extends Model
      */
     public function clients()
     {
-        return $this->belongsToMany(Client::class,'schedules', 'event_id', 'client_id');
+        return $this->belongsToMany(Client::class,'schedules', 'event_id', 'client_id')->withTimestamps();
     }
 }
