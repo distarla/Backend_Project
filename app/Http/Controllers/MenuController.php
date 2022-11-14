@@ -22,11 +22,23 @@ class MenuController extends Controller
     {
         //api/menus?attr=id,value,...
 
+        if ($request->has('attr_prices')) {
+            $attr_prices=$request->attr_prices;
+            $menus=$this->menu->with('prices:id,'.$attr_prices);
+        }
+        else
+            $menus=$this->menu->with('prices', 'events');
+
+        if ($request->has('attr_events')) {
+            $attr_events=$request->attr_events;
+            $menus=$menus->with('events:id,'.$attr_events);
+        }
+
         if ($request->has('attr')) {
             //with tem de ter o atributo 'price_id', 'events_id' nos attr caso contrário devolve nulo
-            $menus=$this->menu->selectRaw($request->attr)->with('prices', 'events')->get();
+            $menus=$menus->selectRaw($request->attr)->get();
         } else {
-            $menus=$this->menu->with('prices', 'events')->get();
+            $menus=$menus->get();
         }
         return response()->json($menus,200);
     }

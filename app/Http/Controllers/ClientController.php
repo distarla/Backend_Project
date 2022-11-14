@@ -21,12 +21,18 @@ class ClientController extends Controller
     public function index(Request $request)
     {
         //api/clients?attr=id,value,...
+        if ($request->has('attr_events')) {
+            $attr_events=$request->attr_events;
+            $clients=$this->client->with('events:id,'.$attr_events);
+        }
+        else
+            $clients=$this->client->with('events');
 
         if ($request->has('attr')) {
             //with tem de ter o atributo 'events_id' nos attr caso contrário devolve nulo
-            $clients=$this->client->selectRaw($request->attr)->with('events')->get();
+            $clients=$clients->selectRaw($request->attr)->get();
         } else {
-            $clients=$this->client->with('events')->get();
+            $clients=$clients->get();
         }
         return response()->json($clients,200);
     }

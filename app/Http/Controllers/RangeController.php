@@ -22,11 +22,21 @@ class RangeController extends Controller
     {
         //api/ranges?attr=id,value,...
 
+        if ($request->has('attr_prices')) {
+            $attr_prices=$request->attr_prices;
+        }
+        if ($request->has('attr_events')) {
+            $attr_events=$request->attr_events;
+        }
+        $price = $request->has('attr_prices') ? 'prices:id,'.$attr_prices : 'prices';
+        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
+        $ranges=$this->range->with($price, $event);
+
         if ($request->has('attr')) {
             //with tem de ter o atributo 'price_id', 'events_id' nos attr caso contrário devolve nulo
-            $ranges=$this->range->selectRaw($request->attr)->with('prices', 'events')->get();
+            $ranges=$ranges->selectRaw($request->attr)->get();
         } else {
-            $ranges=$this->range->with('prices', 'events')->get();
+            $ranges=$ranges->get();
         }
         return response()->json($ranges,200);
     }

@@ -21,12 +21,25 @@ class PriceController extends Controller
     public function index(Request $request)
     {
         //api/prices?attr=id,value,...
+        if ($request->has('attr_menu')) {
+            $attr_menu=$request->attr_menu;
+        }
+        if ($request->has('attr_range')) {
+            $attr_range=$request->attr_range;
+        }
+        if ($request->has('attr_events')) {
+            $attr_events=$request->attr_events;
+        }
+        $menu = $request->has('attr_menu') ? 'menu:id,'.$attr_menu : 'menu';
+        $range = $request->has('attr_range') ? 'range:id,'.$attr_range : 'range';
+        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
+        $prices=$this->price->with($menu, $range, $event);
 
         if ($request->has('attr')) {
             //with tem de ter o atributo 'menu_id', 'range_id', 'events_id' nos attr caso contrário devolve nulo
-            $prices=$this->price->selectRaw($request->attr)->with('menu', 'range', 'events')->get();
+            $prices=$prices->selectRaw($request->attr)->get();
         } else {
-            $prices=$this->price->with('menu', 'range', 'events')->get();
+            $prices=$prices->get();
         }
         return response()->json($prices,200);
     }

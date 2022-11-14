@@ -21,12 +21,29 @@ class EventController extends Controller
     public function index(Request $request)
     {
         //api/events?attr=id,value,...
+        if ($request->has('attr_price')) {
+            $attr_price=$request->attr_price;
+        }
+        if ($request->has('attr_menu')) {
+            $attr_menu=$request->attr_menu;
+        }
+        if ($request->has('attr_range')) {
+            $attr_range=$request->attr_range;
+        }
+        if ($request->has('attr_clients')) {
+            $attr_clients=$request->attr_clients;
+        }
+        $price = $request->has('attr_price') ? 'price:id,'.$attr_price : 'price';
+        $menu = $request->has('attr_menu') ? 'menu:id,'.$attr_menu : 'menu';
+        $range = $request->has('attr_range') ? 'range:id,'.$attr_range : 'range';
+        $client = $request->has('attr_clients') ? 'clients:id,'.$attr_clients : 'clients';
+        $events=$this->event->with($price, $menu, $range, $client);
 
         if ($request->has('attr')) {
             //with tem de ter o atributo 'price_id', 'menu_id', 'range_id', 'clients_id' nos attr caso contrário devolve nulo
-            $events=$this->event->selectRaw($request->attr)->with('price', 'menu', 'range', 'clients')->get();
+            $events=$events->selectRaw($request->attr)->get();
         } else {
-            $events=$this->event->with('price', 'menu', 'range', 'clients')->get();
+            $events=$events->get();
         }
         return response()->json($events,200);
     }
