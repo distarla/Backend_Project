@@ -9,12 +9,13 @@ class Client extends Model
 {
     use HasFactory;
 
-    protected $fillable=['name','address', 'zip', 'city', 'country', 'phone', 'email', 'idCard', 'expiry', 'nif'];
+    protected $fillable=['name','address', 'zip', 'city', 'country', 'phone', 'email', 'idCard', 'expiry', 'nif', 'event_id'];
 
     public function regras($id=-1) {
         return [
             "name"=>"required",
             "email"=>"email:strict",
+            "idCard"=>"required",
             "expiry"=>"date_format:Y-m-d"
         ];
     }

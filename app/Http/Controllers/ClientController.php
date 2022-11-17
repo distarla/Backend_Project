@@ -57,7 +57,21 @@ class ClientController extends Controller
     {
         $request->validate($this->client->regras(),$this->client->feedback());
 
-        $client= $this->client->create($request->all());
+        if (!empty($request->event_id)) {
+            $client_attr = array_diff_key($request->all(), array_flip(["event_id"]));
+            $client= $this->client->firstOrCreate(['idCard'=> $request->idCard], $client_attr);
+            $client->update($client_attr);
+
+            if (!empty($client->events()->get())){
+                $events = $client->events()->get();
+                if (empty($events->find($request->event_id))){
+                    $client->events()->attach($request->event_id);
+                }
+            }
+        } else {
+            $client= $this->client->create($request->all());
+        }
+
         return response()->json($client,201);
     }
 
