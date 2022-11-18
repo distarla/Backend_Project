@@ -2,85 +2,45 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreScheduleRequest;
-use App\Http\Requests\UpdateScheduleRequest;
+use Illuminate\Http\Request;
+use Psr\Http\Message\ResponseInterface;
 use App\Models\Schedule;
 
 class ScheduleController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    public function __construct(Schedule $schedule)
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $this->schedule=$schedule;
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\StoreScheduleRequest  $request
+     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreScheduleRequest $request)
+    public function store(Request $request)
     {
-        //
-    }
+        $request->validate($this->schedule->regras(),$this->schedule->feedback());
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Schedule  $schedule
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Schedule $schedule)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Schedule  $schedule
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Schedule $schedule)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateScheduleRequest  $request
-     * @param  \App\Models\Schedule  $schedule
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateScheduleRequest $request, Schedule $schedule)
-    {
-        //
+        $schedule = $this->schedule->firstOrCreate(['event_id' => $request->event_id, 'client_id' => $request->client_id], ['event_id' => $request->event_id, 'client_id' => $request->client_id]);
+        return response()->json($schedule,201);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Schedule  $schedule
+     * @param  Integer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Schedule $schedule)
+    public function destroy($event_id, $client_id)
     {
-        //
+        $schedule=$this->schedule->where('event_id', $event_id)->where('client_id', $client_id);
+        if (!$schedule->exists())
+            return response()->json(["erro"=>"A marcação pesquisada não existe!"],404);
+        else {
+            $schedule->delete();
+            return response()->json(["msg"=>"A marcação foi apagada com sucesso!"],200);;
+        }
     }
 }

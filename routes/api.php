@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ScheduleController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,3 +24,5 @@ Route::apiResource('events','App\Http\Controllers\EventController');
 Route::apiResource('menus','App\Http\Controllers\MenuController');
 Route::apiResource('ranges','App\Http\Controllers\RangeController');
 Route::apiResource('prices','App\Http\Controllers\PriceController');
+Route::post('schedules', 'App\Http\Controllers\ScheduleController@store');
+Route::delete('schedules/{event_id}/{client_id}', 'App\Http\Controllers\ScheduleController@destroy');
