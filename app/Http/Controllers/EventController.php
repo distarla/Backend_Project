@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Psr\Http\Message\ResponseInterface;
 use App\Models\Event;
+use App\Models\Price;
 
 class EventController extends Controller
 {
@@ -68,7 +69,10 @@ class EventController extends Controller
     {
         $request->validate($this->event->regras(),$this->event->feedback());
 
-        $event= $this->event->create($request->all());
+        $price = Price::where('menu_id', $request->menu_id)->where('range_id', $request->range_id)->get();
+        $event_att = array_merge($request->all(), array('price_id'=>$price[0]->id));
+        $event= $this->event->create($event_att);
+
         return response()->json($event,201);
     }
 
@@ -107,6 +111,7 @@ class EventController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         $event=$this->event->find($id);
         if ($event===null)
             return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
@@ -122,10 +127,15 @@ class EventController extends Controller
                 }
                 $request->validate($regrasDinamicas,$this->event->feedback());
             }
-            else
+            else {
                 $request->validate($this->event->regras($id),$this->event->feedback());
+            }
 
-            $event->fill($request->all());
+            $menu_id = $request->has('menu_id') ? $request->menu_id : $event->menu_id;
+            $range_id = $request->has('range_id') ? $request->range_id : $event->range_id;
+            $price = Price::where('menu_id', $menu_id)->where('range_id', $range_id)->get();
+            $event_att = array_merge($request->all(), array('price_id'=>$price[0]->id));
+            $event->fill($event_att);
             $event->save();
             return response()->json($event,200);
         }

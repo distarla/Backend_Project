@@ -9,19 +9,23 @@ class Event extends Model
 {
     use HasFactory;
 
-    protected $fillable=['title', 'date', 'num_persons', 'menu_id'];
+    protected $fillable=['title', 'date', 'range_id', 'menu_id', 'price_id'];
 
     public function regras($id=-1) {
         return [
             "title"=>"required",
-            "date"=>"required|date_format:Y-m-d"
+            "date"=>"required|date_format:Y-m-d",
+            "menu_id"=>"required",
+            "range_id"=>"required",
+            "price_id"=>"exclude"
         ];
     }
 
     public function feedback() {
         return [
             "required"=>"O campo :attribute é obrigatório",
-            "date"=>"A data indicada não é válida"
+            "date"=>"A data indicada não é válida",
+            "exclude"=>"O campo :attribute não é aceite e vai ser excluido"
         ];
     }
 
