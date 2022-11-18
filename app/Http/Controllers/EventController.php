@@ -40,6 +40,16 @@ class EventController extends Controller
         $client = $request->has('attr_clients') ? 'clients:id,'.$attr_clients : 'clients';
         $events=$this->event->with($price, $menu, $range, $client);
 
+        //...&filter=nome:=:5008
+        if ($request->has('filter')) {
+            $filters=explode(";",$request->filter);
+
+            foreach($filters as $key=>$expression) {
+                $conditions=explode(":",$expression);
+                $events=$events->where($conditions[0],$conditions[1],$conditions[2]);
+            }
+        }
+
         if ($request->has('attr')) {
             //with tem de ter o atributo 'price_id', 'menu_id', 'range_id', 'clients_id' nos attr caso contrário devolve nulo
             $events=$events->selectRaw($request->attr)->get();

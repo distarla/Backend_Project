@@ -23,10 +23,19 @@ class ClientController extends Controller
         //api/clients?attr=id,value,...
         if ($request->has('attr_events')) {
             $attr_events=$request->attr_events;
-            $clients=$this->client->with('events:id,'.$attr_events);
         }
-        else
-            $clients=$this->client->with('events');
+        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
+        $clients=$this->client->with($event);
+
+        //...&filter=nome:=:5008
+        if ($request->has('filter')) {
+            $filters=explode(";",$request->filter);
+
+            foreach($filters as $key=>$expression) {
+                $conditions=explode(":",$expression);
+                $clients=$clients->where($conditions[0],$conditions[1],$conditions[2]);
+            }
+        }
 
         if ($request->has('attr')) {
             //with tem de ter o atributo 'events_id' nos attr caso contrário devolve nulo

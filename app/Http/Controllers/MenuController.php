@@ -24,14 +24,22 @@ class MenuController extends Controller
 
         if ($request->has('attr_prices')) {
             $attr_prices=$request->attr_prices;
-            $menus=$this->menu->with('prices:id,'.$attr_prices);
         }
-        else
-            $menus=$this->menu->with('prices', 'events');
-
         if ($request->has('attr_events')) {
             $attr_events=$request->attr_events;
-            $menus=$menus->with('events:id,'.$attr_events);
+        }
+        $price = $request->has('attr_prices') ? 'prices:id,'.$attr_prices : 'prices';
+        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
+        $menus=$this->menu->with($price, $event);
+
+        //...&filter=nome:=:5008
+        if ($request->has('filter')) {
+            $filters=explode(";",$request->filter);
+
+            foreach($filters as $key=>$expression) {
+                $conditions=explode(":",$expression);
+                $menus=$menus->where($conditions[0],$conditions[1],$conditions[2]);
+            }
         }
 
         if ($request->has('attr')) {

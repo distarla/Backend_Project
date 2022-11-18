@@ -35,6 +35,16 @@ class PriceController extends Controller
         $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
         $prices=$this->price->with($menu, $range, $event);
 
+        //...&filter=nome:=:5008
+        if ($request->has('filter')) {
+            $filters=explode(";",$request->filter);
+
+            foreach($filters as $key=>$expression) {
+                $conditions=explode(":",$expression);
+                $prices=$prices->where($conditions[0],$conditions[1],$conditions[2]);
+            }
+        }
+
         if ($request->has('attr')) {
             //with tem de ter o atributo 'menu_id', 'range_id', 'events_id' nos attr caso contrário devolve nulo
             $prices=$prices->selectRaw($request->attr)->get();

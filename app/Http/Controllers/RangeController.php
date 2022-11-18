@@ -32,6 +32,16 @@ class RangeController extends Controller
         $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
         $ranges=$this->range->with($price, $event);
 
+        //...&filter=nome:=:5008
+        if ($request->has('filter')) {
+            $filters=explode(";",$request->filter);
+
+            foreach($filters as $key=>$expression) {
+                $conditions=explode(":",$expression);
+                $ranges=$ranges->where($conditions[0],$conditions[1],$conditions[2]);
+            }
+        }
+
         if ($request->has('attr')) {
             //with tem de ter o atributo 'price_id', 'events_id' nos attr caso contrário devolve nulo
             $ranges=$ranges->selectRaw($request->attr)->get();
