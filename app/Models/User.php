@@ -43,7 +43,26 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role_id'
     ];
+
+    public function regras($id=-1) {
+        return [
+            "name"=>"required",
+            "email"=>"email:strict",
+            "password"=>"required|min:6",
+            "role_id"=>"required"
+        ];
+    }
+
+    public function feedback() {
+        return [
+            "required"=>"O campo :attribute é obrigatório",
+            "email"=>"O Email indicado não é válido",
+            "min"=>"O campo :attribute é demasiado pequeno"
+        ];
+    }
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -63,4 +82,12 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the role associated with the user.
+     */
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
 }

@@ -4,14 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Psr\Http\Message\ResponseInterface;
-use App\Models\Menu;
+use App\Models\Role;
 
-class MenuController extends Controller
+class RoleController extends Controller
 {
-    public function __construct(Menu $menu)
+    public function __construct(Role $role)
     {
-        $this->middleware('auth.role:1,2')->except(['index', 'show']);
-        $this->menu=$menu;
+        $this->middleware('auth.role:1')->except(['index', 'show']);
+        $this->role=$role;
     }
 
     /**
@@ -21,17 +21,12 @@ class MenuController extends Controller
      */
     public function index(Request $request)
     {
-        //api/menus?attr=id,value,...
-
-        if ($request->has('attr_prices')) {
-            $attr_prices=$request->attr_prices;
+        //api/roles?attr=id,value,...
+        if ($request->has('attr_users')) {
+            $attr_users=$request->attr_users;
         }
-        if ($request->has('attr_events')) {
-            $attr_events=$request->attr_events;
-        }
-        $price = $request->has('attr_prices') ? 'prices:id,'.$attr_prices : 'prices';
-        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
-        $menus=$this->menu->with($price, $event);
+        $user = $request->has('attr_users') ? 'users:id,'.$attr_users : 'users';
+        $roles=$this->role->with($user);
 
         //...&filter=nome:=:5008
         if ($request->has('filter')) {
@@ -39,17 +34,17 @@ class MenuController extends Controller
 
             foreach($filters as $key=>$expression) {
                 $conditions=explode(":",$expression);
-                $menus=$menus->where($conditions[0],$conditions[1],$conditions[2]);
+                $roles=$roles->where($conditions[0],$conditions[1],$conditions[2]);
             }
         }
 
         if ($request->has('attr')) {
-            //with tem de ter o atributo 'price_id', 'events_id' nos attr caso contrário devolve nulo
-            $menus=$menus->selectRaw($request->attr)->get();
+            //with tem de ter o atributo 'users_id' nos attr caso contrário devolve nulo
+            $roles=$roles->selectRaw($request->attr)->get();
         } else {
-            $menus=$menus->get();
+            $roles=$roles->get();
         }
-        return response()->json($menus,200);
+        return response()->json($roles,200);
     }
 
     /**
@@ -70,10 +65,10 @@ class MenuController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate($this->menu->regras(),$this->menu->feedback());
+        $request->validate($this->role->regras(),$this->role->feedback());
 
-        $menu= $this->menu->create($request->all());
-        return response()->json($menu,201);
+        $role= $this->role->create($request->all());
+        return response()->json($role,201);
     }
 
     /**
@@ -84,11 +79,11 @@ class MenuController extends Controller
      */
     public function show($id)
     {
-        $menu=$this->menu->with('prices', 'events')->find($id);
-        if ($menu===null)
-            return response()->json(["erro"=>"O Menu pesquisado não existe!"],404);
+        $role=$this->role->with('users')->find($id);
+        if ($role===null)
+            return response()->json(["erro"=>"A Função pesquisada não existe!"],404);
         else
-            return response()->json($menu,200);
+            return response()->json($role,200);
     }
 
     /**
@@ -111,27 +106,27 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $menu=$this->menu->find($id);
-        if ($menu===null)
-            return response()->json(["erro"=>"O Menu pesquisado não existe!"],404);
+        $role=$this->role->find($id);
+        if ($role===null)
+            return response()->json(["erro"=>"A Função pesquisada não existe!"],404);
         else {
             if ($request->method() === 'PATCH') {
                 $regrasDinamicas=array();
 
                 //Percorrer todas as regras do Model
-                foreach($menu->regras() as $input=>$regra)  {
+                foreach($role->regras() as $input=>$regra)  {
                     //adiciona no array regrasdinamicas as regras correspondentes aos campos submetidos
                     if(array_key_exists($input,$request->all()))
                         $regrasDinamicas[$input]=$regra;
                 }
-                $request->validate($regrasDinamicas,$this->menu->feedback());
+                $request->validate($regrasDinamicas,$this->role->feedback());
             }
             else
-                $request->validate($this->menu->regras($id),$this->menu->feedback());
+                $request->validate($this->role->regras($id),$this->role->feedback());
 
-            $menu->fill($request->all());
-            $menu->save();
-            return response()->json($menu,200);
+            $role->fill($request->all());
+            $role->save();
+            return response()->json($role,200);
         }
     }
 
@@ -143,12 +138,12 @@ class MenuController extends Controller
      */
     public function destroy($id)
     {
-        $menu=$this->menu->find($id);
-        if ($menu===null)
-            return response()->json(["erro"=>"O Menu pesquisado não existe!"],404);
+        $role=$this->role->find($id);
+        if ($role===null)
+            return response()->json(["erro"=>"A Função pesquisada não existe!"],404);
         else {
-            $menu->delete();
-            return response()->json(["msg"=>"O Menu foi apagado com sucesso!"],200);;
+            $role->delete();
+            return response()->json(["msg"=>"A Função foi apagada com sucesso!"],200);;
         }
     }
 }

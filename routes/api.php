@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\ScheduleController;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,10 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('login','App\Http\Controllers\AuthController@login'); Route::post('logout','App\Http\Controllers\AuthController@logout'); Route::post('refresh','App\Http\Controllers\AuthController@refresh');
-Route::post('me','App\Http\Controllers\AuthController@me');
+Route::prefix('v1')->group(function() {
+    Route::post('login','App\Http\Controllers\AuthController@login');
+});
 
 Route::prefix('v1')->middleware('jwt.auth')->group(function() {
+    Route::post('logout','App\Http\Controllers\AuthController@logout'); Route::post('refresh','App\Http\Controllers\AuthController@refresh');
+    Route::post('me','App\Http\Controllers\AuthController@me');
+
+    Route::apiResource('roles','App\Http\Controllers\RoleController');
+    Route::apiResource('users','App\Http\Controllers\UserController');
+
     Route::apiResource('clients','App\Http\Controllers\ClientController');
     Route::apiResource('events','App\Http\Controllers\EventController');
     Route::apiResource('menus','App\Http\Controllers\MenuController');

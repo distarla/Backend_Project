@@ -10,6 +10,7 @@ class PriceController extends Controller
 {
     public function __construct(Price $price)
     {
+        $this->middleware('auth.role:1,2')->except(['index', 'show']);
         $this->price=$price;
     }
 

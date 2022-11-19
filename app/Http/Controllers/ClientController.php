@@ -10,6 +10,7 @@ class ClientController extends Controller
 {
     public function __construct(Client $client)
     {
+        $this->middleware('auth.role:1,2')->except(['index', 'show']);
         $this->client=$client;
     }
 

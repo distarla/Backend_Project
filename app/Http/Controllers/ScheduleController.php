@@ -10,6 +10,7 @@ class ScheduleController extends Controller
 {
     public function __construct(Schedule $schedule)
     {
+        $this->middleware('auth.role:1,2')->except(['index', 'show']);
         $this->schedule=$schedule;
     }
 

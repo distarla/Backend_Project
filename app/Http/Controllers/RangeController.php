@@ -10,6 +10,7 @@ class RangeController extends Controller
 {
     public function __construct(Range $range)
     {
+        $this->middleware('auth.role:1,2')->except(['index', 'show']);
         $this->range=$range;
     }
 

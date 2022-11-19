@@ -11,6 +11,7 @@ class EventController extends Controller
 {
     public function __construct(Event $event)
     {
+        $this->middleware('auth.role:1,2')->except(['index', 'show']);
         $this->event=$event;
     }
 
