@@ -67,7 +67,8 @@ class UserController extends Controller
     {
         $request->validate($this->user->regras(),$this->user->feedback());
 
-        $user= $this->user->create($request->all());
+        $user= $this->user->create(array_merge(
+            $request->all(), ['password' => bcrypt($request->password)]));
         return response()->json($user,201);
     }
 
@@ -120,11 +121,15 @@ class UserController extends Controller
                         $regrasDinamicas[$input]=$regra;
                 }
                 $request->validate($regrasDinamicas,$this->user->feedback());
-            }
-            else
+            } else {
                 $request->validate($this->user->regras($id),$this->user->feedback());
+            }
 
-            $user->fill($request->all());
+            if (array_key_exists('password',$request->all())) {
+                $user->fill(array_merge($request->all(), ['password' => bcrypt($request->password)]));
+            } else {
+                $user->fill($request->all());
+            }
             $user->save();
             return response()->json($user,200);
         }

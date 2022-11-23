@@ -15,7 +15,7 @@ class Client extends Model
         return [
             "name"=>"required",
             "email"=>"email:strict",
-            "idCard"=>"required",
+            "idCard"=>"required|unique:clients,idCard,$id",
             "expiry"=>"date_format:Y-m-d"
         ];
     }
@@ -24,6 +24,7 @@ class Client extends Model
         return [
             "required"=>"O campo :attribute é obrigatório",
             "email"=>"O Email indicado não é válido",
+            "idCard.unique"=>"O BI indicado já existe",
             "expiry"=>"A data de validade não é válida"
         ];
     }

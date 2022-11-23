@@ -24,8 +24,10 @@ class ClientController extends Controller
         //api/clients?attr=id,value,...
         if ($request->has('attr_events')) {
             $attr_events=$request->attr_events;
+            $event='events:id,'.$attr_events;
+        } else{
+            $event='events';
         }
-        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
         $clients=$this->client->with($event);
 
         //...&filter=nome:=:5008

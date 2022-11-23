@@ -9,23 +9,21 @@ class Event extends Model
 {
     use HasFactory;
 
-    protected $fillable=['title', 'date', 'range_id', 'menu_id', 'price_id'];
+    protected $fillable=['title', 'date', 'range_id', 'menu_id'];
 
     public function regras($id=-1) {
         return [
             "title"=>"required",
             "date"=>"required|date_format:Y-m-d",
             "menu_id"=>"required",
-            "range_id"=>"required",
-            "price_id"=>"exclude"
+            "range_id"=>"required"
         ];
     }
 
     public function feedback() {
         return [
             "required"=>"O campo :attribute é obrigatório",
-            "date"=>"A data indicada não é válida",
-            "exclude"=>"O campo :attribute não é aceite e vai ser excluido"
+            "date"=>"A data indicada não é válida"
         ];
     }
 
@@ -43,14 +41,6 @@ class Event extends Model
     public function menu()
     {
         return $this->belongsTo(Menu::class);
-    }
-
-    /**
-     * Get the price associated with the event.
-     */
-    public function price()
-    {
-        return $this->belongsTo(Price::class);
     }
 
     /**

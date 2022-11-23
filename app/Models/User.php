@@ -49,7 +49,7 @@ class User extends Authenticatable implements JWTSubject
     public function regras($id=-1) {
         return [
             "name"=>"required",
-            "email"=>"email:strict",
+            "email"=>"email:strict|unique:users,email,$id",
             "password"=>"required|min:6",
             "role_id"=>"required"
         ];
@@ -58,7 +58,8 @@ class User extends Authenticatable implements JWTSubject
     public function feedback() {
         return [
             "required"=>"O campo :attribute é obrigatório",
-            "email"=>"O Email indicado não é válido",
+            "email.unique"=>"O Email indicado já existe",
+            "strict"=>"O Email indicado não é válido",
             "min"=>"O campo :attribute é demasiado pequeno"
         ];
     }

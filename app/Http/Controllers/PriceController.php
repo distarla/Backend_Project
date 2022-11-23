@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Psr\Http\Message\ResponseInterface;
 use App\Models\Price;
+use App\Models\Event;
 
 class PriceController extends Controller
 {
@@ -28,13 +29,9 @@ class PriceController extends Controller
         if ($request->has('attr_range')) {
             $attr_range=$request->attr_range;
         }
-        if ($request->has('attr_events')) {
-            $attr_events=$request->attr_events;
-        }
         $menu = $request->has('attr_menu') ? 'menu:id,'.$attr_menu : 'menu';
         $range = $request->has('attr_range') ? 'range:id,'.$attr_range : 'range';
-        $event = $request->has('attr_events') ? 'events:id,'.$attr_events : 'events';
-        $prices=$this->price->with($menu, $range, $event);
+        $prices=$this->price->with($menu, $range);
 
         //...&filter=nome:=:5008
         if ($request->has('filter')) {
@@ -47,7 +44,7 @@ class PriceController extends Controller
         }
 
         if ($request->has('attr')) {
-            //with tem de ter o atributo 'menu_id', 'range_id', 'events_id' nos attr caso contrário devolve nulo
+            //with tem de ter o atributo 'menu_id', 'range_id' nos attr caso contrário devolve nulo
             $prices=$prices->selectRaw($request->attr)->get();
         } else {
             $prices=$prices->get();
@@ -87,11 +84,31 @@ class PriceController extends Controller
      */
     public function show($id)
     {
-        $price=$this->price->with('menu', 'range', 'events')->find($id);
+        $price=$this->price->with('menu', 'range')->find($id);
         if ($price===null)
             return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
         else
             return response()->json($price,200);
+    }
+
+    /**
+     * Display the events for the specified resource.
+     *
+     * @param  Integer
+     * @return \Illuminate\Http\Response
+     */
+    public function show_events($id)
+    {
+        $price=$this->price->find($id);
+        if ($price===null)
+            return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
+        else {
+            $events = Event::where('menu_id', $price->menu_id)->where('range_id', $price->range_id)->get();
+            if ($events===null)
+                return response()->json(["msg"=>"Não existem eventos com o preço pesquisado!"],200);
+            else
+                return response()->json($events,200);
+        }
     }
 
     /**

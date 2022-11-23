@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('country', 30)->nullable();
             $table->bigInteger('phone')->nullable();
             $table->string('email', 255)->nullable();
-            $table->bigInteger('idCard')->nullable();
+            $table->bigInteger('idCard')->unique();
             $table->date('expiry')->nullable();
             $table->bigInteger('nif')->nullable();
             $table->timestamps();

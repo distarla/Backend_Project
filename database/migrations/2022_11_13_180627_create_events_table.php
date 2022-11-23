@@ -18,13 +18,11 @@ return new class extends Migration
             $table->string('title', 50);
             $table->date('date');
             $table->unsignedBigInteger('menu_id');
-            $table->unsignedBigInteger('range_id')->unsigned();
-            $table->unsignedBigInteger('price_id')->unsigned();
+            $table->unsignedBigInteger('range_id');
             $table->timestamps();
 
             $table->foreign('menu_id')->references('id')->on('menus')->onDelete('cascade');
             $table->foreign('range_id')->references('id')->on('ranges')->onDelete('cascade');
-            $table->foreign('price_id')->references('id')->on('prices')->onDelete('cascade');
         });
     }
 

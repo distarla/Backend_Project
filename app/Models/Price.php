@@ -26,14 +26,6 @@ class Price extends Model
     }
 
     /**
-     * Get the events associated with the price.
-     */
-    public function events()
-    {
-        return $this->hasMany(Event::class);
-    }
-
-    /**
      * Get the menu associated with the price.
      */
     public function menu()

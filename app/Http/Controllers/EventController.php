@@ -23,9 +23,6 @@ class EventController extends Controller
     public function index(Request $request)
     {
         //api/events?attr=id,value,...
-        if ($request->has('attr_price')) {
-            $attr_price=$request->attr_price;
-        }
         if ($request->has('attr_menu')) {
             $attr_menu=$request->attr_menu;
         }
@@ -35,11 +32,11 @@ class EventController extends Controller
         if ($request->has('attr_clients')) {
             $attr_clients=$request->attr_clients;
         }
-        $price = $request->has('attr_price') ? 'price:id,'.$attr_price : 'price';
+
         $menu = $request->has('attr_menu') ? 'menu:id,'.$attr_menu : 'menu';
         $range = $request->has('attr_range') ? 'range:id,'.$attr_range : 'range';
         $client = $request->has('attr_clients') ? 'clients:id,'.$attr_clients : 'clients';
-        $events=$this->event->with($price, $menu, $range, $client);
+        $events=$this->event->with($menu, $range, $client);
 
         //...&filter=nome:=:5008
         if ($request->has('filter')) {
@@ -52,7 +49,7 @@ class EventController extends Controller
         }
 
         if ($request->has('attr')) {
-            //with tem de ter o atributo 'price_id', 'menu_id', 'range_id', 'clients_id' nos attr caso contrário devolve nulo
+            //with tem de ter o atributo 'menu_id', 'range_id', 'clients_id' nos attr caso contrário devolve nulo
             $events=$events->selectRaw($request->attr)->get();
         } else {
             $events=$events->get();
@@ -80,9 +77,7 @@ class EventController extends Controller
     {
         $request->validate($this->event->regras(),$this->event->feedback());
 
-        $price = Price::where('menu_id', $request->menu_id)->where('range_id', $request->range_id)->get();
-        $event_att = array_merge($request->all(), array('price_id'=>$price[0]->id));
-        $event= $this->event->create($event_att);
+        $event= $this->event->create($request->all());
 
         return response()->json($event,201);
     }
@@ -95,11 +90,31 @@ class EventController extends Controller
      */
     public function show($id)
     {
-        $event=$this->event->with('price', 'menu', 'range', 'clients')->find($id);
+        $event=$this->event->with('menu', 'range', 'clients')->find($id);
         if ($event===null)
             return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
         else
             return response()->json($event,200);
+    }
+
+    /**
+     * Display the price for the specified resource.
+     *
+     * @param  Integer
+     * @return \Illuminate\Http\Response
+     */
+    public function show_price($id)
+    {
+        $event=$this->event->find($id);
+        if ($event===null)
+            return response()->json(["erro"=>"O Evento pesquisado não existe!"],404);
+        else {
+            $price = Price::where('menu_id', $event->menu_id)->where('range_id', $event->range_id)->get();
+            if ($price===null)
+                return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
+            else
+                return response()->json($price,200);
+        }
     }
 
     /**
@@ -142,11 +157,7 @@ class EventController extends Controller
                 $request->validate($this->event->regras($id),$this->event->feedback());
             }
 
-            $menu_id = $request->has('menu_id') ? $request->menu_id : $event->menu_id;
-            $range_id = $request->has('range_id') ? $request->range_id : $event->range_id;
-            $price = Price::where('menu_id', $menu_id)->where('range_id', $range_id)->get();
-            $event_att = array_merge($request->all(), array('price_id'=>$price[0]->id));
-            $event->fill($event_att);
+            $event->fill($request->all());
             $event->save();
             return response()->json($event,200);
         }
