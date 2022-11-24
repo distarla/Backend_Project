@@ -104,10 +104,7 @@ class PriceController extends Controller
             return response()->json(["erro"=>"O Preço pesquisado não existe!"],404);
         else {
             $events = Event::where('menu_id', $price->menu_id)->where('range_id', $price->range_id)->get();
-            if ($events===null)
-                return response()->json(["msg"=>"Não existem eventos com o preço pesquisado!"],200);
-            else
-                return response()->json($events,200);
+            return response()->json($events,200);
         }
     }
 

@@ -23,7 +23,7 @@ class Client extends Model
     public function feedback() {
         return [
             "required"=>"O campo :attribute é obrigatório",
-            "email"=>"O Email indicado não é válido",
+            "strict"=>"O Email indicado não é válido",
             "idCard.unique"=>"O BI indicado já existe",
             "expiry"=>"A data de validade não é válida"
         ];

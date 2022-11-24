@@ -21,7 +21,8 @@ class Range extends Model
     public function feedback() {
         return [
             "required"=>"O campo :attribute é obrigatório",
-            "unique"=>"O valor indicado já está atribuído",
+            "initial_value.unique"=>"O valor indicado já está atribuído",
+            "final_value.unique"=>"O valor indicado já está atribuído",
             "lt"=>"O valor tem que ser inferior ao valor final",
             "gt"=>"O valor tem que ser superior ao valor inicial"
         ];
