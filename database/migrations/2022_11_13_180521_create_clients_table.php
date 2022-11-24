@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 100);
-            $table->string('address', 255)->nullable();
-            $table->string('zip', 20)->nullable();
-            $table->string('city', 30)->nullable();
-            $table->string('country', 30)->nullable();
+            $table->string('name');
+            $table->string('address')->nullable();
+            $table->string('zip')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
             $table->bigInteger('phone')->nullable();
-            $table->string('email', 255)->nullable();
+            $table->string('email')->nullable();
             $table->bigInteger('idCard')->unique();
             $table->date('expiry')->nullable();
             $table->bigInteger('nif')->nullable();

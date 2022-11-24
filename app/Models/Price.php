@@ -13,15 +13,16 @@ class Price extends Model
 
     public function regras($id=-1) {
         return [
-            "menu_id"=>"required",
-            "range_id"=>"required",
-            "value"=>"required"
+            "menu_id"=>"required|integer",
+            "range_id"=>"required|integer",
+            "value"=>"required|integer"
         ];
     }
 
     public function feedback() {
         return [
-            "required"=>"O campo :attribute é obrigatório"
+            "required"=>"O campo :attribute é obrigatório",
+            "integer"=>"O campo :attribute tem de ser um número inteiro"
         ];
     }
 

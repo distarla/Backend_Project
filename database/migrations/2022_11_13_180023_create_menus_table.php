@@ -15,12 +15,12 @@ return new class extends Migration
     {
         Schema::create('menus', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 30);
-            $table->string('starters', 255)->nullable();
-            $table->string('main', 255)->nullable();
-            $table->string('desserts', 255)->nullable();
-            $table->string('buffet', 255)->nullable();
-            $table->string('bar', 255)->nullable();
+            $table->string('name');
+            $table->string('starters')->nullable();
+            $table->string('main')->nullable();
+            $table->string('desserts')->nullable();
+            $table->string('buffet')->nullable();
+            $table->string('bar')->nullable();
             $table->timestamps();
         });
     }

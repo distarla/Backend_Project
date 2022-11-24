@@ -15,15 +15,16 @@ class Event extends Model
         return [
             "title"=>"required",
             "date"=>"required|date_format:Y-m-d",
-            "menu_id"=>"required",
-            "range_id"=>"required"
+            "menu_id"=>"required|integer",
+            "range_id"=>"required|integer"
         ];
     }
 
     public function feedback() {
         return [
             "required"=>"O campo :attribute é obrigatório",
-            "date"=>"A data indicada não é válida"
+            "date"=>"A data indicada não é válida",
+            "integer"=>"O campo :attribute tem de ser um número inteiro"
         ];
     }
 

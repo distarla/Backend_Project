@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Psr\Http\Message\ResponseInterface;
 use App\Models\Client;
-
+use App\Models\Event;
 class ClientController extends Controller
 {
     public function __construct(Client $client)
@@ -70,21 +70,24 @@ class ClientController extends Controller
         $request->validate($this->client->regras(),$this->client->feedback());
 
         if (!empty($request->event_id)) {
-            $client_attr = array_diff_key($request->all(), array_flip(["event_id"]));
-            $client= $this->client->firstOrCreate(['idCard'=> $request->idCard], $client_attr);
-            $client->update($client_attr);
+            if (Event::find($request->event_id)===null) {
+                return response()->json(["erro"=>"O Evento que pretende associar não existe!"],404);
+            } else {
+                $client_attr = array_diff_key($request->all(), array_flip(["event_id"]));
+                $client= $this->client->create($client_attr);
 
-            if (!empty($client->events()->get())){
-                $events = $client->events()->get();
-                if (empty($events->find($request->event_id))){
-                    $client->events()->attach($request->event_id);
+                if (!empty($client->events()->get())){
+                    $events = $client->events()->get();
+                    if (empty($events->find($request->event_id))){
+                        $client->events()->attach($request->event_id);
+                    }
                 }
+                return response()->json($client,201);
             }
         } else {
             $client= $this->client->create($request->all());
+            return response()->json($client,201);
         }
-
-        return response()->json($client,201);
     }
 
     /**

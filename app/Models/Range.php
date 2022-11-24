@@ -13,8 +13,8 @@ class Range extends Model
 
     public function regras($id=-1) {
         return [
-            "initial_value"=>"required|unique:ranges,initial_value,$id|lt:final_value",
-            "final_value"=>"required|unique:ranges,final_value,$id|gt:initial_value"
+            "initial_value"=>"required|unique:ranges,initial_value,$id|lt:final_value|integer",
+            "final_value"=>"required|unique:ranges,final_value,$id|gt:initial_value|integer"
         ];
     }
 
@@ -24,7 +24,8 @@ class Range extends Model
             "initial_value.unique"=>"O valor indicado já está atribuído",
             "final_value.unique"=>"O valor indicado já está atribuído",
             "lt"=>"O valor tem que ser inferior ao valor final",
-            "gt"=>"O valor tem que ser superior ao valor inicial"
+            "gt"=>"O valor tem que ser superior ao valor inicial",
+            "integer"=>"O campo :attribute tem de ser um número inteiro"
         ];
     }
 

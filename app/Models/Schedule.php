@@ -13,14 +13,15 @@ class Schedule extends Model
 
     public function regras($id=-1) {
         return [
-            "event_id"=>"required",
-            "client_id"=>"required"
+            "event_id"=>"required|integer",
+            "client_id"=>"required|integer"
         ];
     }
 
     public function feedback() {
         return [
-            "required"=>"O campo :attribute é obrigatório"
+            "required"=>"O campo :attribute é obrigatório",
+            "integer"=>"O campo :attribute tem de ser um número inteiro"
         ];
     }
 }
