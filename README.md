@@ -2,6 +2,7 @@
 ## Event Management API
 
 This project aims to build an API to serve the previously made Event Management Application during the FrontEnd Project. It was made already thinking in the developments of the application going further and so it added features to the previously created ones.
+The specifications used in laravel .env are copied to .env.example.
 The full documentation of this project can be found in {link in your email inbox}.
 
 ### The Stack
